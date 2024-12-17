@@ -1,30 +1,32 @@
-import numpy as np
 import os
 import sys
-# from flask import Flask
-import asyncio
-from utils import get_details, get_llm_output, write_to_db
+from flask import Flask, request, jsonify
+# import asyncio
+from utils import get_llm_output
 from activity_recognition import get_activity, get_recommendation
 
 ## Pipeline
-## 1. Get accelerometer data on api (for demo) 
-## 2. Predict action : ## Implemented
+## 1. Get accelerometer data on api (for demo) ## implemented
+## 2. Predict action : ## Implemented using HARGPT paper (https://arxiv.org/abs/2403.02727) as reference
 ## 3. Send action to llm : ## Implemented
 
-# app = Flask(__name__)
+app = Flask(__name__)
 
-@app.route('/api/<data>', methods=['GET', 'POST'])
-async def main():
+@app.route('/api/', methods=['POST'])
+def process_request():
     content = request.get_json(silent=True)
     try:
         data = content['data']
     except Exception as e:
         print('no data in json', e)
+        return jsonify({'message': 'JSON data can not be parsed!'})
+    print(data)
     activity = get_activity(data)
     output = get_recommendation(activity, data)
-    write_to_db(output)
+    print(output)
 
-    return
+    return output
 
-
+if __name__ == "__main__":
+    app.run(host='localhost', port=8989, debug=True)
 
