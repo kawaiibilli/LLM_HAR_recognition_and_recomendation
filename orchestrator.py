@@ -14,11 +14,12 @@ app = Flask(__name__)
 
 @app.route('/api/', methods=['POST'])
 def process_request():
-    content = request.get_json(silent=True)
+    content = request.get_json()
     try:
         data = content['data']
     except Exception as e:
         print('no data in json', e)
+        print(content)
         return jsonify({'message': 'JSON data can not be parsed!'})
     print(data)
     activity = get_activity(data)
