@@ -13,7 +13,12 @@ ex_gyro_data = {
 ex_data = {
             'acc' : ex_acc_data,
            'gyro': ex_gyro_data,
-           'freq': '10hz'
+           'freq': '10hz',
+            'age' : '46',
+            'gender': 'man',
+            'weight': '92 kg',
+            'location' : 'Himachal Pradesh, India',
+            'temp' : '10 degree Celcius'
            }
 
 def get_activity(data):
@@ -27,11 +32,28 @@ Gyroscopes: \n \
 x-axis: {str(data['gyro']['x'])}, y-axis: {str(data['gyro']['y'])}, z-axis: {str(data['gyro']['z'])} \n \
 The person’s action belongs to one of the following categories: [step-on-stairs, walking, running]. \n \
 Could you please tell me what action the person was doing based on the given \
-information and IMU readings? Please make an analysis step by step."
+information and IMU readings? Please make an analysis step by step. Please do not use code script."
 
     print(hargpt_prompt)
     activity = get_llm_output(hargpt_prompt)
+    hargpt_prompt2=f"Given an elaborate analysis of a predicted action by a language model, go through the analysis and classify the action to the most probable among this list of action categories : : [stepping-on-stairs, walking, running]. \n \
+    Only give the predicted action category and nothing else. \
+    "
+    activity = get_llm_output(hargpt_prompt2)
     return activity
 
+def get_recommendation(activity, data):
+    recommendation_prompt=f"### Instruction: You are a health monitoring and alert device, you give recommendation to users based on a predicted activity summary. \n \
+### Content: This is a summary of the predicted activity : \"{activity}\" \n \
+The user is {data['age']} years old and is of weight {data['weight']}, this user is now at {data['location']} where the current temperature is {data['temp']} \n \
+Based on these information please mention if user's current activity might be unsafe for their health and in case it's unsafe recommend whether the user should take a break or slow down or change the type of activity. Be short, precise and address the user directly. Do not repeat the predicted action back.\
+"
+    print(recommendation_prompt)
+    reco = get_llm_output(recommendation_prompt)
+    return reco
+
 # if __name__ == "__main__":
-#     get_activity(ex_data)
+#     activity = get_activity(ex_data)
+#     reco = get_recommendation(activity, ex_data)
+#
+#     print("Recommendation : ", reco)
